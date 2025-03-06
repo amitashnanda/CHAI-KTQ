@@ -1,0 +1,3 @@
+accuracy_improvement:- 0.10999999999999999
+speed_increment:- 1.11945773027444
+memory_reduction:- 87.79296875

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Model Optimization</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .config-option {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Model Optimization</h1>
+
+    <div>
+        <label for="model_name">Model Name:</label>
+        <select id="model_name">
+            <option value="facebook/opt-125m">OPT-125m</option>
+            <option value="facebook/opt-350m">OPT-350m</option>
+            </select>
+    </div>
+
+    <div>
+        <label for="dataset_name">Dataset Name:</label>
+        <select id="dataset_name">
+            <option value="sst2">SST-2</option>
+            <option value="piqa">PIQA</option>
+            <option value="rte">RTE</option>
+            </select>
+    </div>
+
+    <div>
+        <label for="criterion">Criterion:</label>
+        <select id="criterion">
+            <option value="accuracy">Accuracy</option>
+            <option value="latency">Latency</option>
+            <option value="size">Model Size</option>
+        </select>
+    </div>
+
+    <button onclick="findBestConfiguration()">Find Best Configuration</button>
+
+    <div id="results"></div>
+
+    <h2>Choose Configuration</h2>
+    <div class="config-option">
+        <input type="checkbox" id="pruning">
+        <label for="pruning">Pruning</label>
+    </div>
+    <div class="config-option">
+        <input type="checkbox" id="kd">
+        <label for="kd">Knowledge Distillation</label>
+    </div>
+    <div class="config-option">
+        <input type="checkbox" id="chai-target">
+        <label for="chai-target">Targeted Fine-Tuning</label>
+    </div>
+    <div class="config-option">
+        <input type="checkbox" id="chai-quant">
+        <label for="chai-quant">Quantization</label>
+    </div>
+
+    <button onclick="chooseConfiguration()">Apply Configuration</button>
+
+    <div id="chosen-results"></div>
+
+
+    <script>
+        function findBestConfiguration() {
+            const modelName = document.getElementById("model_name").value;
+            const datasetName = document.getElementById("dataset_name").value;
+            const criterion = document.getElementById("criterion").value;
+
+            fetch("/find_best_configuration", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model_name: modelName,
+                    dataset_name: datasetName,
+                    criterion: criterion
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("results").innerHTML = `Best Configuration: ${data.best_configuration}, Criterion: ${data.criterion}, Best Value: ${data.best_value}`;
+            });
+        }
+
+        function chooseConfiguration() {
+            const modelName = document.getElementById("model_name").value;
+            const datasetName = document.getElementById("dataset_name").value;
+            const pruning = document.getElementById("pruning").checked;
+            const kd = document.getElementById("kd").checked;
+            const chaiTarget = document.getElementById("chai-target").checked;
+            const chaiQuant = document.getElementById("chai-quant").checked;
+
+            const configurations = [];
+            if (pruning) configurations.push("pruning");
+            if (kd) configurations.push("kd");
+            if (chaiTarget) configurations.push("chai-target");
+            if (chaiQuant) configurations.push("chai-quant");
+
+            fetch("/choose_configuration", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model_name: modelName,
+                    dataset_name: datasetName,
+                    configurations: configurations
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("chosen-results").innerHTML = `Configuration: ${data.configuration.join(", ")}, Accuracy: ${data.accuracy}, Latency: ${data.latency}, Size: ${data.size}`;
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+Baseline Accuracy: 0.51
+Baseline Time (s): 1.8092586994171143
+Clustered Accuracy: 0.54
+Clustered Time (s): 19.830830335617065
+Speedup: 0.09123464165631048

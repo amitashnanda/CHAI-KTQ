@@ -1,0 +1,7 @@
+Baseline Accuracy: 0.51
+Baseline Time (s): 1.8417103290557861
+Clustered Accuracy: 0.48
+Clustered Time (s): 1.9361956119537354
+Speedup: 0.9512005489969022
+Memory Savings (MB): -0.0020479999993767706
+Memory Reduction (%): -3.8486643583494796e-05
